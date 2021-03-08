@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:args/args.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 
@@ -42,12 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
   WebSocketChannel? _channel;
   String _lastReceivedMessage = "";
   bool _hasStartedConnect = false;
-  bool _isSocketOpen = false;
 
   @override
   void initState() {
     super.initState();
-    _isSocketOpen = false;
     _connect();
   }
 
@@ -58,19 +54,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _wserror(err) async {
-    setState(() {
-      _isSocketOpen = false;
-    });
-
     print(new DateTime.now().toString() + " Connection error: $err");
     await _connect();
   }
 
   _wsdone() async {
-    setState(() {
-      _isSocketOpen = false;
-    });
-
     print(new DateTime.now().toString() + " Connection done");
     await _connect();
   }
@@ -96,7 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
         (data) {
             print("Received data: $data");
             setState(() {
-              _isSocketOpen = true;
               _lastReceivedMessage = data;
             });
             _streamController.add(data);
