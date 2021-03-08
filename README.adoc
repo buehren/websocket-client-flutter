@@ -221,7 +221,10 @@ js_primitives.dart:30 Sending message #10 to WebSocket sink
 js_primitives.dart:30 Received data: echo of Message #10 from Flutter to WebSocket
 js_primitives.dart:30 Sending message #11 to WebSocket sink
 js_primitives.dart:30 Received data: echo of Message #11 from Flutter to WebSocket
+----
 
+== Issue: WebSocket connection fails with server on Google Cloud Run
 
+Posted in https://github.com/flutter/flutter/issues[Flutter bug tracker]:
 
-
+* https://github.com/flutter/flutter/issues/77617[WebSocket connection fails with server on Google Cloud Run]
