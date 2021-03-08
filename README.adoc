@@ -1,0 +1,227 @@
+= WebSocket Client in Flutter
+:toc:
+:toclevels: 2
+
+
+This simple WebSocket client connects to a given WebSocket URL and sends texts when pressing the button. Received data is printed. (Requires https://flutter.dev/docs/get-started/install[Flutter].)
+
+Sending messages via Websocket from the app does not work in _Flutter for Android_ when connecting to a Websocket server running on _Google Cloud Run_.
+
+It works when using a server outside _Google Cloud Run_ or when using _Flutter for Web_.
+
+== &#x2713; Server _echo.websocket.org_
+
+First run `flutter devices` to list the available emulators and connected Android devices. Note the device id (printed in the second column).
+
+Then start the app on a device or emulator as shown below (replace `DEVICEID` with your device id) and click the send button multiple times.
+
+You can see that the app is sending messages via the WebSocket and receives the same messages as echoes:
+
+[source%nowrap]
+----
+> flutter run \
+     --no-sound-null-safety \
+     -d DEVICEID \
+     --dart-define="WS_URL=wss://echo.websocket.org/"
+
+
+Launching lib/main.dart on EML L29 in debug mode...
+...
+Running with unsound null safety
+For more information see https://dart.dev/null-safety/unsound-null-safety
+D/AwareBitmapCacher(17743): handleInit switch not opened pid=17743
+W/Settings(17743): Setting device_provisioned has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+V/HiTouch_HiTouchSensor(17743): User setup is finished.
+I/flutter (17743): Sending message #1 to WebSocket sink
+V/AudioManager(17743): querySoundEffectsEnabled...
+I/flutter (17743): Received data: Message #1 from Flutter to WebSocket
+I/flutter (17743): Sending message #2 to WebSocket sink
+V/AudioManager(17743): querySoundEffectsEnabled...
+I/flutter (17743): Received data: Message #2 from Flutter to WebSocket
+I/flutter (17743): Sending message #3 to WebSocket sink
+V/AudioManager(17743): querySoundEffectsEnabled...
+I/flutter (17743): Received data: Message #3 from Flutter to WebSocket
+I/flutter (17743): Sending message #4 to WebSocket sink
+V/AudioManager(17743): querySoundEffectsEnabled...
+I/flutter (17743): Received data: Message #4 from Flutter to WebSocket
+----
+
+== Servers on Google Cloud Run
+
+To launch servers on Google Cloud Run, click *"Run on Google Cloud"* on these pages:
+
+* https://github.com/buehren/websocket-echo-server-quarkus#server-cloudrun[Java (Quarkus) WebSocket echo server]
+* https://github.com/buehren/websocket-echo-server-python#server-cloudrun[Python WebSocket echo server]
+
+Note the URLs displayed after `Your application is now live here`.
+
+=== &#x2717; Flutter for Android
+
+==== Java (Quarkus) WebSocket echo server
+
+Start the app on a device or emulator as shown below (replace `DEVICEID` with your device id and `xxxxxxxxxx-xx.x` with the corresponding part of the Java/Quarkus Cloud Run URL) and click the send button multiple times.
+
+You can see that the WebSocket connection is closed immediately ("done") when trying to send a message in _Flutter for Android_:
+
+[source%nowrap]
+----
+> flutter run \
+      --no-sound-null-safety \
+      -d DEVICEID \
+      --dart-define="WS_URL=wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket"
+
+
+Running with unsound null safety
+For more information see https://dart.dev/null-safety/unsound-null-safety
+D/AwareBitmapCacher(15321): handleInit switch not opened pid=15321
+
+I/flutter (15321): Sending message #1 to WebSocket sink
+V/AudioManager(15321): querySoundEffectsEnabled...
+
+I/flutter (15321): 2021-03-08 17:41:02.680826 Connection done
+
+I/flutter (15321): 2021-03-08 17:41:06.691836 Starting connection attempt to wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket ...
+I/flutter (15321): Sending message #2 to WebSocket sink
+V/AudioManager(15321): querySoundEffectsEnabled...
+I/flutter (15321): 2021-03-08 17:41:15.884124 Connection done
+I/flutter (15321): 2021-03-08 17:41:19.890023 Starting connection attempt to wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket ...
+Application finished.
+----
+
+==== Python WebSocket echo server
+
+The same happens when using a Websocket echo server implemented in Python on Google Cloud Run:
+[source%nowrap]
+----
+> flutter run \
+      --no-sound-null-safety \
+      -d DEVICEID \
+      --dart-define="WS_URL=wss://websocket-echo-server-python-xxxxxxxxxx-xx.x.run.app/"
+
+
+Running with unsound null safety
+For more information see https://dart.dev/null-safety/unsound-null-safety
+I/flutter (22975): 2021-03-08 18:32:27.541871 Starting connection attempt to wss://websocket-echo-server-python-vsv4xsncya-ey.a.run.app/ ...
+I/flutter (22975): 2021-03-08 18:32:52.829201 Connection done
+I/flutter (22975): 2021-03-08 18:32:56.836798 Starting connection attempt to wss://websocket-echo-server-python-vsv4xsncya-ey.a.run.app/ ...
+D/ZrHung.AppEyeUiProbe(22975): restart watching
+D/mali_winsys(22975): EGLint new_window_surface(egl_winsys_display *, void *, EGLSurface, EGLConfig, egl_winsys_surface **, EGLBoolean) returns 0x3000
+D/mali_winsys(22975): EGLint new_window_surface(egl_winsys_display *, void *, EGLSurface, EGLConfig, egl_winsys_surface **, EGLBoolean) returns 0x3000
+W/Gralloc3(22975): mapper 3.x is not supported
+E/        (22975): APS:IFLoad:importExternalFunctions, search function createNewHwApsUtils failed, dlsym err:undefined symbol: createNewHwApsUtils
+D/        (22975): APS:importExternalFunctions OK
+I/HwViewRootImpl(22975): removeInvalidNode jank list is null
+
+I/flutter (22975): Sending message #1 to WebSocket sink
+V/AudioManager(22975): querySoundEffectsEnabled...
+I/flutter (22975): 2021-03-08 18:33:14.174709 Connection done
+
+I/flutter (22975): 2021-03-08 18:33:18.178244 Starting connection attempt to wss://websocket-echo-server-python-vsv4xsncya-ey.a.run.app/ ...
+
+I/flutter (22975): Sending message #2 to WebSocket sink
+V/AudioManager(22975): querySoundEffectsEnabled...
+I/flutter (22975): 2021-03-08 18:33:21.990575 Connection done
+
+I/flutter (22975): 2021-03-08 18:33:25.998400 Starting connection attempt to wss://websocket-echo-server-python-vsv4xsncya-ey.a.run.app/ ...
+Application finished.
+----
+
+==== Another WebSocket server
+
+The actual Websocket server of our project sends a message before receiving anything. You can see that the server's message is received by the app.
+
+But again the WebSocket connection is closed immediately ("done") when trying to send a message to the server running on Google Cloud Run:
+[source%nowrap]
+----
+I/flutter (15724): 2021-03-08 17:43:40.124222 Starting connection attempt to wss://event-statistics-xxxxxxxxxx-xx.x.run.app/stats/... ...
+I/flutter (15724): Received data: [{"name": ...}]
+
+I/flutter (15724): Sending message #1 to WebSocket sink
+V/AudioManager(15724): querySoundEffectsEnabled...
+
+I/flutter (15724): 2021-03-08 17:43:48.146008 Connection done
+
+I/flutter (15724): 2021-03-08 17:43:52.159407 Starting connection attempt to wss://event-statistics-xxxxxxxxxx-xx.x.run.app/stats/... ...
+I/flutter (15724): Received data: [{"name": ...}]
+I/flutter (10072): connect
+I/flutter (10072): 2021-03-08 17:44:01.442469 Starting connection attempt to wss://event-statistics-xxxxxxxxxx-xx.x.run.app/stats/... ...
+I/flutter (10072): Received data: [{"name": ...}]
+----
+
+=== &#x2713; Flutter for web
+
+Start the app in a web server as shown below (replace `xxxxxxxxxx-xx.x` with the corresponding part of the Java/Quarkus Cloud Run URL).
+
+Then open `http://127.0.0.1:8089/` in your browser and click the app's send button multiple times.
+
+You can see that the app can send messages to the WebSocket on Google Cloud Run in _Flutter for web_ without any problem:
+
+[source%nowrap,bash]
+----
+> flutter run \
+      --no-sound-null-safety \
+      -d web-server \
+      --web-port 8089 \
+      --observatory-port 9099 \
+      --web-hostname 0.0.0.0 \
+      --dart-define="WS_URL=wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket"
+
+
+2021-03-08 16:35:26.517 Starting connection attempt to wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket ...
+js_primitives.dart:30 Sending message #1 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #1 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #2 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #2 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #3 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #3 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #4 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #4 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #5 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #5 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #6 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #6 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #7 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #7 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #8 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #8 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #9 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #9 from Flutter to WebSocket
+----
+
+It also works when running in Google Chrome debug mode:
+[source%nowrap,bash]
+----
+> flutter run \
+      --no-sound-null-safety \
+      -d chrome \
+      --dart-define="WS_URL=wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket"
+
+
+This app is linked to the debug service: ws://127.0.0.1:36879/uWO01OhB8Z4=/ws
+js_primitives.dart:30 2021-03-08 16:36:58.749 Starting connection attempt to wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket ...
+js_primitives.dart:30 Sending message #1 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #1 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #2 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #2 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #3 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #3 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #4 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #4 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #5 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #5 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #6 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #6 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #7 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #7 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #8 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #8 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #9 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #9 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #10 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #10 from Flutter to WebSocket
+js_primitives.dart:30 Sending message #11 to WebSocket sink
+js_primitives.dart:30 Received data: echo of Message #11 from Flutter to WebSocket
+
+
+
+
