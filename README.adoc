@@ -2,12 +2,13 @@
 :toc:
 :toclevels: 2
 
+== Introduction
 
 This simple WebSocket client connects to a given WebSocket URL and sends texts when pressing the button. Received data is printed. (Requires https://flutter.dev/docs/get-started/install[Flutter].)
 
-Sending messages via Websocket from the app does not work in _Flutter for Android_ when connecting to a Websocket server running on _Google Cloud Run_.
+Sending messages via Websocket from the app does *not* work in *_Flutter for Android/Linux/Windows_* when connecting to a Websocket server running on _Google Cloud Run_.
 
-It works when using a server outside _Google Cloud Run_ or when using _Flutter for Web_.
+It *works* when using a server outside _Google Cloud Run_ or when using *_Flutter for Web_*.
 
 == &#x2713; Server _echo.websocket.org_
 
@@ -148,7 +149,73 @@ I/flutter (10072): 2021-03-08 17:44:01.442469 Starting connection attempt to wss
 I/flutter (10072): Received data: [{"name": ...}]
 ----
 
-=== &#x2713; Flutter for web
+=== &#x2717; Flutter for Linux
+
+Run `flutter config --enable-linux-desktop` to enable Linux executable support in Flutter if required.
+
+Start the app as Linux executable as shown below (replace `xxxxxxxxxx-xx.x` with the corresponding part of the Java/Quarkus Cloud Run URL) and click the send button multiple times.
+
+You can see that the WebSocket connection is closed immediately ("done") when trying to send a message in _Flutter for Linux_:
+[source%nowrap]
+----
+> flutter run \
+      --verbose \
+      -d linux \
+      --dart-define="WS_URL=wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket"
+
+
+[+4008 ms] flutter: 2021-03-09 15:01:03.141445 Starting connection attempt to
+wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+[+302273 ms] flutter: 2021-03-09 15:06:05.414310 Connection done
+[+4012 ms] flutter: 2021-03-09 15:06:09.427479 Starting connection attempt to
+wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+[+300953 ms] flutter: Sending message #1 to WebSocket sink
+[  +56 ms] flutter: 2021-03-09 15:11:10.437721 Connection done
+[ +906 ms] flutter: Sending message #2 to WebSocket sink
+[+3106 ms] flutter: 2021-03-09 15:11:14.450520 Starting connection attempt to
+wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+[+3324 ms] flutter: Sending message #3 to WebSocket sink
+[  +64 ms] flutter: 2021-03-09 15:11:17.839670 Connection done
+[+4021 ms] flutter: 2021-03-09 15:11:21.858995 Starting connection attempt to
+wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+[+13589 ms] flutter: Sending message #4 to WebSocket sink
+[ +151 ms] flutter: 2021-03-09 15:11:35.597968 Connection done
+[+4009 ms] flutter: 2021-03-09 15:11:39.612284 Starting connection attempt to
+wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+----
+
+=== &#x2717; Flutter for Windows
+
+Run `flutter config --enable-windows-desktop` to enable Windows executable support in Flutter if required.
+
+In Windows `--dart-define` did not work for me. To start the app as Windows executable, replace the default value for WS_URL in `lib/main.dart` with `wss://websocket-echo-server-quarkus-xxxxxxxxxx-xx.x.run.app/websocket` (use the corresponding part of your Java/Quarkus Cloud Run URL).
+
+You can see that the WebSocket connection is closed immediately ("done") when trying to send a message in _Flutter for Windows_:
+[source%nowrap]
+----
+> flutter run --verbose -d windows
+
+
+[ +105 ms] flutter: 2021-03-09 16:40:25.711306 Starting connection attempt to wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+[        ]  Running with sound null safety
+
+[+6803 ms] flutter: Sending message #1 to WebSocket sink
+[  +42 ms] flutter: 2021-03-09 16:40:33.345528 Connection done
+
+[+4003 ms] flutter: 2021-03-09 16:40:37.348427 Starting connection attempt to wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+
+[+9008 ms] flutter: Sending message #2 to WebSocket sink
+[  +46 ms] flutter: 2021-03-09 16:40:46.404390 Connection done
+
+[+4001 ms] flutter: 2021-03-09 16:40:50.404752 Starting connection attempt to wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+
+[+5531 ms] flutter: Sending message #3 to WebSocket sink
+[  +44 ms] flutter: 2021-03-09 16:40:55.980917 Connection done
+
+[+4001 ms] flutter: 2021-03-09 16:40:59.983745 Starting connection attempt to wss://websocket-echo-server-quarkus-vsv4xsncya-ey.a.run.app/websocket ...
+----
+
+=== &#x2713; Flutter for Web
 
 Start the app in a web server as shown below (replace `xxxxxxxxxx-xx.x` with the corresponding part of the Java/Quarkus Cloud Run URL).
 
@@ -156,7 +223,7 @@ Then open `http://127.0.0.1:8089/` in your browser and click the app's send butt
 
 You can see that the app can send messages to the WebSocket on Google Cloud Run in _Flutter for web_ without any problem:
 
-[source%nowrap,bash]
+[source%nowrap]
 ----
 > flutter run \
       --no-sound-null-safety \
@@ -189,7 +256,7 @@ js_primitives.dart:30 Received data: echo of Message #9 from Flutter to WebSocke
 ----
 
 It also works when running in Google Chrome debug mode:
-[source%nowrap,bash]
+[source%nowrap]
 ----
 > flutter run \
       --no-sound-null-safety \
